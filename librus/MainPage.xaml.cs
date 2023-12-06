@@ -1,25 +1,64 @@
-﻿namespace librus
+﻿
+namespace librus
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        private Dictionary<string, Dictionary<string, List<string>>> gradesData = new Dictionary<string, Dictionary<string, List<string>>>();
 
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private void DisplayGrades_Clicked(object sender, EventArgs e)
         {
-            count++;
+            string selectedClass = ClassPicker.SelectedItem?.ToString();
+            string selectedStudent = StudentPicker.SelectedItem?.ToString();
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
+            if (gradesData.ContainsKey(selectedClass) && gradesData[selectedClass].ContainsKey(selectedStudent))
+            {
+                string grades = string.Join("\n", gradesData[selectedClass][selectedStudent]);
+                GradesLabel.Text = $"Oceny dla {selectedStudent} z klasy {selectedClass}:\n{grades}";
+            }
             else
-                CounterBtn.Text = $"Clicked {count} times";
+            {
+                GradesLabel.Text = "Brak ocen dla wybranego ucznia w danej klasie.";
+            }
+        }
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private void AddGrade_Clicked(object sender, EventArgs e)
+        {
+            string selectedClass = ClassPicker.SelectedItem?.ToString();
+            string selectedStudent = StudentPicker.SelectedItem?.ToString();
+            string newGrade = GradeEntry.Text;
+
+            if (!gradesData.ContainsKey(selectedClass))
+            {
+                gradesData[selectedClass] = new Dictionary<string, List<string>>();
+            }
+
+            if (!gradesData[selectedClass].ContainsKey(selectedStudent))
+            {
+                gradesData[selectedClass][selectedStudent] = new List<string>();
+            }
+
+            gradesData[selectedClass][selectedStudent].Add(newGrade);
+
+            GradeEntry.Text = "";
+        }
+
+        private void RemoveGrade_Clicked(object sender, EventArgs e)
+        {
+            string selectedClass = ClassPicker.SelectedItem?.ToString();
+            string selectedStudent = StudentPicker.SelectedItem?.ToString();
+            string gradeToRemove = RemoveGradeEntry.Text;
+
+            if (gradesData.ContainsKey(selectedClass) && gradesData[selectedClass].ContainsKey(selectedStudent))
+            {
+                gradesData[selectedClass][selectedStudent].Remove(gradeToRemove);
+            }
+
+            RemoveGradeEntry.Text = "";
         }
     }
-
 }
