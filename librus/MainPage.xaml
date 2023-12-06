@@ -4,7 +4,7 @@
              x:Class="librus.MainPage">
     <StackLayout>
         <Label Text="Wybierz klasę w szkole:" />
-        <Picker x:Name="ClassPicker" Title="Wybierz klasę">
+        <Picker x:Name="ClassPicker">
             <Picker.Items>
                 <x:String>1A</x:String>
                 <x:String>1B</x:String>
@@ -12,10 +12,20 @@
         </Picker>
 
         <Label Text="Wybierz ucznia:" />
-        <Picker x:Name="StudentPicker" Title="Wybierz ucznia">
+        <Picker x:Name="StudentPicker">
             <Picker.Items>
                 <x:String>Jan Kowalski</x:String>
                 <x:String>Tomasz Manikowski</x:String>
+            </Picker.Items>
+        </Picker>
+        <Label Text="Wybierz przedmiot:"/>
+        <Picker x:Name="SubjectPicker">
+            <Picker.Items>
+                <x:String>Matematyka</x:String>
+                <x:String>Fizyka</x:String>
+                <x:String>Geografia</x:String>
+                <x:String>Polski</x:String>
+                <x:String>Zawodowe z Panem Krystianem</x:String>
             </Picker.Items>
         </Picker>
 
