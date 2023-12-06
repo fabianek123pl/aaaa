@@ -3,8 +3,8 @@ namespace librus
 {
     public partial class MainPage : ContentPage
     {
-        private Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> gradesData =
-            new Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>();
+        private Dictionary<string, Dictionary<string, Dictionary<string, List<int>>>> gradesData =
+            new Dictionary<string, Dictionary<string, Dictionary<string, List<int>>>>();
 
         public MainPage()
         {
@@ -21,8 +21,9 @@ namespace librus
                 gradesData[selectedClass][selectedStudent].ContainsKey(SubjectPicker.SelectedItem?.ToString()))
             {
                 string subject = SubjectPicker.SelectedItem?.ToString();
-                string grades = string.Join("\n", gradesData[selectedClass][selectedStudent][subject]);
-                GradesLabel.Text = $"Oceny dla {selectedStudent} z klasy {selectedClass} z przedmiotu {subject}:\n{grades}";
+                List<int> grades = gradesData[selectedClass][selectedStudent][subject];
+                string gradesString = string.Join("\n", grades.Select(g => g.ToString()));
+                GradesLabel.Text = $"Oceny dla {selectedStudent} z klasy {selectedClass} z przedmiotu {subject}:\n{gradesString}";
             }
             else
             {
@@ -35,26 +36,33 @@ namespace librus
             string selectedClass = ClassPicker.SelectedItem?.ToString();
             string selectedStudent = StudentPicker.SelectedItem?.ToString();
             string selectedSubject = SubjectPicker.SelectedItem?.ToString();
-            string newGrade = GradeEntry.Text;
+            string newGradeText = GradeEntry.Text;
 
-            if (!gradesData.ContainsKey(selectedClass))
+            if (int.TryParse(newGradeText, out int newGrade) && newGrade >= 1 && newGrade <= 6)
             {
-                gradesData[selectedClass] = new Dictionary<string, Dictionary<string, List<string>>>();
-            }
+                if (!gradesData.ContainsKey(selectedClass))
+                {
+                    gradesData[selectedClass] = new Dictionary<string, Dictionary<string, List<int>>>();
+                }
 
-            if (!gradesData[selectedClass].ContainsKey(selectedStudent))
+                if (!gradesData[selectedClass].ContainsKey(selectedStudent))
+                {
+                    gradesData[selectedClass][selectedStudent] = new Dictionary<string, List<int>>();
+                }
+
+                if (!gradesData[selectedClass][selectedStudent].ContainsKey(selectedSubject))
+                {
+                    gradesData[selectedClass][selectedStudent][selectedSubject] = new List<int>();
+                }
+
+                gradesData[selectedClass][selectedStudent][selectedSubject].Add(newGrade);
+
+                GradeEntry.Text = "";
+            }
+            else
             {
-                gradesData[selectedClass][selectedStudent] = new Dictionary<string, List<string>>();
+                DisplayAlert("Błąd", "Ocena musi być liczbą całkowitą od 1 do 6.", "OK");
             }
-
-            if (!gradesData[selectedClass][selectedStudent].ContainsKey(selectedSubject))
-            {
-                gradesData[selectedClass][selectedStudent][selectedSubject] = new List<string>();
-            }
-
-            gradesData[selectedClass][selectedStudent][selectedSubject].Add(newGrade);
-
-            GradeEntry.Text = "";
         }
 
         private void RemoveGrade_Clicked(object sender, EventArgs e)
@@ -62,16 +70,23 @@ namespace librus
             string selectedClass = ClassPicker.SelectedItem?.ToString();
             string selectedStudent = StudentPicker.SelectedItem?.ToString();
             string selectedSubject = SubjectPicker.SelectedItem?.ToString();
-            string gradeToRemove = RemoveGradeEntry.Text;
+            string gradeToRemoveText = RemoveGradeEntry.Text;
 
-            if (gradesData.ContainsKey(selectedClass) &&
-                gradesData[selectedClass].ContainsKey(selectedStudent) &&
-                gradesData[selectedClass][selectedStudent].ContainsKey(selectedSubject))
+            if (int.TryParse(gradeToRemoveText, out int gradeToRemove) && gradeToRemove >= 1 && gradeToRemove <= 6)
             {
-                gradesData[selectedClass][selectedStudent][selectedSubject].Remove(gradeToRemove);
-            }
+                if (gradesData.ContainsKey(selectedClass) &&
+                    gradesData[selectedClass].ContainsKey(selectedStudent) &&
+                    gradesData[selectedClass][selectedStudent].ContainsKey(selectedSubject))
+                {
+                    gradesData[selectedClass][selectedStudent][selectedSubject].Remove(gradeToRemove);
+                }
 
-            RemoveGradeEntry.Text = "";
+                RemoveGradeEntry.Text = "";
+            }
+            else
+            {
+                DisplayAlert("Błąd", "Ocena do usunięcia musi być liczbą całkowitą od 1 do 6.", "OK");
+            }
         }
     }
 }
