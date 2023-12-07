@@ -54,7 +54,7 @@ namespace librus
                 {
                     gradesData[selectedClass][selectedStudent][selectedSubject] = new List<int>();
                 }
-
+                ///
                 gradesData[selectedClass][selectedStudent][selectedSubject].Add(newGrade);
 
                 GradeEntry.Text = "";
